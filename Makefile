@@ -1,7 +1,7 @@
 EXECUTABLE = set-simulator-location
 ARCHIVE = $(EXECUTABLE).tar.gz
 PREFIX ?= /usr/local/bin
-SRCS = $(wildcard Sources/*.swift)
+SRCS = $(wildcard sources/*.swift)
 
 $(EXECUTABLE): $(SRCS)
 	swiftc \
