@@ -1,7 +1,5 @@
 import Foundation
 
-private let kBootedUDIDRegex = "^    [^(]*\\(([^\\)]*)\\) \\(Booted\\)$"
-
 enum SimulatorFetchError: String, Error {
     case simctlFailed = "Running `simctl list` failed"
     case failedToReadOutput = "Failed to read output from simctl"
@@ -11,7 +9,7 @@ enum SimulatorFetchError: String, Error {
 func getBootedSimulators() throws -> [String] {
     let task = Process()
     task.launchPath = "/usr/bin/xcrun"
-    task.arguments = ["simctl", "list", "devices"]
+    task.arguments = ["simctl", "list", "-j", "devices"]
 
     let pipe = Pipe()
     task.standardOutput = pipe
@@ -26,18 +24,19 @@ func getBootedSimulators() throws -> [String] {
         throw SimulatorFetchError.simctlFailed
     }
 
-    guard let output = String(data: data, encoding: .utf8) else {
+    guard let json = (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String: Any] else {
         throw SimulatorFetchError.failedToReadOutput
     }
 
-    let nsString = output as NSString
-    let regex = try! NSRegularExpression(pattern: kBootedUDIDRegex, options: .anchorsMatchLines)
-    let matches = regex.matches(in: output, options: [],
-                                range: NSRange(location: 0, length: nsString.length))
+    let devices = json["devices"] as? [String: [[String: String]]] ?? [:]
+    let bootedIDs = devices
+        .flatMap { $1 }
+        .filter { $0["state"] == "Booted" }
+        .flatMap { $0["udid"] }
 
-    if matches.isEmpty {
+    if bootedIDs.isEmpty {
         throw SimulatorFetchError.noBootedSimulators
     }
 
-    return matches.map { nsString.substring(with: $0.rangeAt(1)) }
+    return bootedIDs
 }
