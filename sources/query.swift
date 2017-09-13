@@ -2,7 +2,7 @@ import CoreLocation
 import Foundation
 import MapKit
 
-func findLocation(from arguments: [String]) -> Result<CLLocationCoordinate2D> {
+func findLocation(from arguments: [String]) -> LocationSimulationData {
     if arguments.isEmpty {
         return .failure("No arguments passed for location search")
     }
@@ -26,7 +26,7 @@ func findLocation(from arguments: [String]) -> Result<CLLocationCoordinate2D> {
         return .failure("No coordinate found for '\(placemark.name ?? "")'")
     }
 
-    return .success(coordinate)
+    return .coordinate(coordinate)
 }
 
 private extension MKLocalSearch {

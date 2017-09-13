@@ -13,6 +13,7 @@ func exitWithUsage(error: String? = nil) -> Never {
         print(error, terminator: "\n\n", to: &stderrStream)
     }
 
-    print("Usage: set-simulator-location [-c 0 0|-q San Francisco] [-s Simulator Name]", to: &stderrStream)
+    print("Usage: set-simulator-location [-c 0 0|-q San Francisco|-p file path] [-s Simulator Name]",
+          to: &stderrStream)
     exit(EXIT_FAILURE)
 }

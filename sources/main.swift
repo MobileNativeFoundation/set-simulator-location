@@ -22,6 +22,7 @@ guard let flag = arguments.popFirst() else {
 let commands = [
     "-c": coordinate,
     "-q": findLocation,
+    "-p": path,
 ]
 
 guard let command = commands[flag] else {
@@ -29,7 +30,7 @@ guard let command = commands[flag] else {
 }
 
 switch command(Array(arguments)) {
-    case .success(let coordinate) where coordinate.isValid:
+    case .coordinate(let coordinate) where coordinate.isValid:
         do {
             let bootedSimulators = try getBootedSimulators()
             let simulators = try deviceName.map { try getSimulators(named: $0, from: bootedSimulators) }
@@ -39,8 +40,15 @@ switch command(Array(arguments)) {
         } catch let error as SimulatorFetchError {
             exitWithUsage(error: error.description)
         }
-    case .success(let coordinate):
+    case .coordinate(let coordinate):
         exitWithUsage(error: "Coordinate: \(coordinate) is invalid")
+    case .fileURL(let fileURL):
+        do {
+            postNotification(for: fileURL, to: try getBootedSimulators())
+            print("Setting location based on \(fileURL.path)")
+        } catch let error as SimulatorFetchError {
+            exitWithUsage(error: error.rawValue)
+        }
     case .failure(let error):
         exitWithUsage(error: error)
 }
