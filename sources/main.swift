@@ -3,8 +3,7 @@ import Foundation
 
 var arguments = CommandLine.arguments.dropFirst()
 
-enum DeviceMode
-{
+enum DeviceMode {
     case singleDevice(device: String)
     case bootedDevices
 }
@@ -14,14 +13,12 @@ var deviceMode: DeviceMode = .bootedDevices
 
 if let argumentIndex = arguments.index(of: "-d") {
     let deviceIndex = arguments.index(after: argumentIndex)
-    if deviceIndex != arguments.endIndex
-    {
+    if deviceIndex != arguments.endIndex {
         let device = arguments[deviceIndex]
         arguments.remove(at: deviceIndex)
         arguments.remove(at: argumentIndex)
         deviceMode = .singleDevice(device: device)
-    }
-    else {
+    } else {
         exitWithUsage()
     }
 }
@@ -33,7 +30,7 @@ guard let flag = arguments.popFirst() else {
 
 let commands = [
     "-c": coordinate,
-    "-q": findLocation
+    "-q": findLocation,
 ]
 
 guard let command = commands[flag] else {
@@ -43,13 +40,11 @@ guard let command = commands[flag] else {
 switch command(Array(arguments)) {
     case .success(let coordinate) where coordinate.isValid:
         do {
-            switch deviceMode
-            {
+            switch deviceMode {
             case .bootedDevices:
                 postNotification(for: coordinate, to: try getBootedSimulators())
             case .singleDevice(let device):
-                switch try getDeviceUdid(name: device)
-                {
+                switch try getDeviceUdid(name: device) {
                 case .success(let simulator):
                     postNotification(for: coordinate, to: [simulator])
                 case .failure(let error):

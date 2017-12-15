@@ -6,10 +6,8 @@ enum SimulatorFetchError: String, Error {
     case noBootedSimulators = "No simulators are currently booted"
 }
 
-struct Simulator
-{
-    enum State : String
-    {
+struct Simulator {
+    enum State : String {
         case shutdown = "Shutdown"
         case booted = "Booted"
     }
@@ -19,8 +17,7 @@ struct Simulator
     var state: State
 }
 
-func getDeviceUdid(name: String) throws -> Result<String>
-{
+func getDeviceUdid(name: String) throws -> Result<String> {
     let simulators: [Simulator] = try getSimulators().filter { $0.name == name }
 
     guard let simulator = simulators.first else {
@@ -30,8 +27,7 @@ func getDeviceUdid(name: String) throws -> Result<String>
     return .success(simulator.udid)
 }
 
-func getBootedSimulators() throws -> [String]
-{
+func getBootedSimulators() throws -> [String] {
     let simulators = try getSimulators()
     let bootedSimulators = simulators.filter { $0.state == .booted }
                                     .map { $0.udid }
@@ -65,12 +61,9 @@ func getSimulators() throws -> [Simulator] {
     let devices = json["devices"] as? [String: [[String: String]]] ?? [:]
 
     var simulators = [Simulator]()
-    for topName in devices.keys
-    {
-        if let deviceTypes = devices[topName]
-        {
-            for typeDict in deviceTypes
-            {
+    for topName in devices.keys {
+        if let deviceTypes = devices[topName] {
+            for typeDict in deviceTypes {
                 guard let udid = typeDict["udid"],
                     let name = typeDict["name"],
                     let stateString = typeDict["state"],
