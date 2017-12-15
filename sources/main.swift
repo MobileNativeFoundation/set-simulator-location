@@ -14,10 +14,16 @@ var deviceMode: DeviceMode = .bootedDevices
 
 if let argumentIndex = arguments.index(of: "-d") {
     let deviceIndex = arguments.index(after: argumentIndex)
-    let device = arguments[deviceIndex]
-    arguments.remove(at: deviceIndex)
-    arguments.remove(at: argumentIndex)
-    deviceMode = .singleDevice(device: device)
+    if deviceIndex != arguments.endIndex
+    {
+        let device = arguments[deviceIndex]
+        arguments.remove(at: deviceIndex)
+        arguments.remove(at: argumentIndex)
+        deviceMode = .singleDevice(device: device)
+    }
+    else {
+        exitWithUsage()
+    }
 }
 
 guard let flag = arguments.popFirst() else {
