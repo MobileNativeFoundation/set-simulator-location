@@ -6,7 +6,35 @@ enum SimulatorFetchError: String, Error {
     case noBootedSimulators = "No simulators are currently booted"
 }
 
+struct Simulator {
+    enum State : String {
+        case shutdown = "Shutdown"
+        case booted = "Booted"
+    }
+
+    var udid: String
+    var name: String
+    var state: State
+}
+
+func getDeviceUdid(name: String) throws -> Result<String> {
+    guard let simulator: Simulator = try getSimulators().first(where: { $0.name == name }) else {
+        return .failure("No simulators found by that name")
+    }
+
+    return .success(simulator.udid)
+}
+
 func getBootedSimulators() throws -> [String] {
+    let simulators = try getSimulators()
+    let bootedSimulators = simulators.filter { $0.state == .booted }
+                                    .map { $0.udid }
+
+    return bootedSimulators
+}
+
+
+func getSimulators() throws -> [Simulator] {
     let task = Process()
     task.launchPath = "/usr/bin/xcrun"
     task.arguments = ["simctl", "list", "-j", "devices"]
@@ -29,14 +57,19 @@ func getBootedSimulators() throws -> [String] {
     }
 
     let devices = json["devices"] as? [String: [[String: String]]] ?? [:]
-    let bootedIDs = devices
-        .flatMap { $1 }
-        .filter { $0["state"] == "Booted" }
-        .flatMap { $0["udid"] }
 
-    if bootedIDs.isEmpty {
-        throw SimulatorFetchError.noBootedSimulators
+    var simulators = [Simulator]()
+    for (_, deviceTypes) in devices {
+        for typeDict in deviceTypes {
+            guard let udid = typeDict["udid"],
+                let name = typeDict["name"],
+                let stateString = typeDict["state"],
+                let state = Simulator.State(rawValue: stateString) else {
+                    continue
+            }
+            simulators.append(Simulator(udid: udid, name: name, state: state))
+        }
     }
 
-    return bootedIDs
+    return simulators
 }
