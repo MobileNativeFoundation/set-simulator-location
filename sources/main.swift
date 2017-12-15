@@ -17,7 +17,7 @@ if let argumentIndex = arguments.index(of: "-d") {
     let device = arguments[deviceIndex]
     arguments.remove(at: deviceIndex)
     arguments.remove(at: argumentIndex)
-    deviceMode = .singleDevice(device)
+    deviceMode = .singleDevice(device: device)
 }
 
 guard let flag = arguments.popFirst() else {
