@@ -61,17 +61,15 @@ func getSimulators() throws -> [Simulator] {
     let devices = json["devices"] as? [String: [[String: String]]] ?? [:]
 
     var simulators = [Simulator]()
-    for topName in devices.keys {
-        if let deviceTypes = devices[topName] {
-            for typeDict in deviceTypes {
-                guard let udid = typeDict["udid"],
-                    let name = typeDict["name"],
-                    let stateString = typeDict["state"],
-                    let state = Simulator.State(rawValue: stateString) else {
-                        continue
-                }
-                simulators.append(Simulator(udid: udid, name: name, state: state))
+    for (_, deviceTypes) in devices {
+        for typeDict in deviceTypes {
+            guard let udid = typeDict["udid"],
+                let name = typeDict["name"],
+                let stateString = typeDict["state"],
+                let state = Simulator.State(rawValue: stateString) else {
+                    continue
             }
+            simulators.append(Simulator(udid: udid, name: name, state: state))
         }
     }
 
