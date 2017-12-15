@@ -18,9 +18,7 @@ struct Simulator {
 }
 
 func getDeviceUdid(name: String) throws -> Result<String> {
-    let simulators: [Simulator] = try getSimulators().filter { $0.name == name }
-
-    guard let simulator = simulators.first else {
+    guard let simulator: Simulator = try getSimulators().first(where: { $0.name == name }) else {
         return .failure("No simulators found by that name")
     }
 
