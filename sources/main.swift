@@ -5,16 +5,19 @@ var arguments = CommandLine.arguments.dropFirst()
 
 enum DeviceMode
 {
-    case singleDevice
+    case singleDevice(device: String)
     case bootedDevices
 }
-
 
 // default
 var deviceMode: DeviceMode = .bootedDevices
 
-if arguments.contains("-d") {
-    deviceMode = .singleDevice
+if let argumentIndex = arguments.index(of: "-d") {
+    let deviceIndex = arguments.index(after: argumentIndex)
+    let device = arguments[deviceIndex]
+    arguments.remove(at: deviceIndex)
+    arguments.remove(at: argumentIndex)
+    deviceMode = .singleDevice(device)
 }
 
 guard let flag = arguments.popFirst() else {
@@ -38,8 +41,8 @@ switch command(Array(arguments)) {
             {
             case .bootedDevices:
                 postNotification(for: coordinate, to: try getBootedSimulators())
-            case .singleDevice:
-                switch try getDeviceUdid(from: Array(arguments))
+            case .singleDevice(let device):
+                switch try getDeviceUdid(name: device)
                 {
                 case .success(let simulator):
                     postNotification(for: coordinate, to: [simulator])

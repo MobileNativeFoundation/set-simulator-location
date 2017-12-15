@@ -19,16 +19,9 @@ struct Simulator
     var state: State
 }
 
-func getDeviceUdid(from arguments: [String]) throws -> Result<String>
+func getDeviceUdid(name: String) throws -> Result<String>
 {
-    guard let argumentIndex = arguments.index(of: "-d") else {
-        return .failure("No arguments passed for device search")
-    }
-
-    let deviceIndex = arguments.index(after: argumentIndex)
-    let device = arguments[deviceIndex]
-
-    let simulators: [Simulator] = try getSimulators().filter { $0.name == device }
+    let simulators: [Simulator] = try getSimulators().filter { $0.name == name }
 
     guard let simulator = simulators.first else {
         return .failure("No simulators found by that name")
