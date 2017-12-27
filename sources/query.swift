@@ -23,7 +23,7 @@ func findLocation(from arguments: [String]) -> Result<CLLocationCoordinate2D> {
     }
 
     guard let coordinate = placemark.location?.coordinate else {
-        return .failure("No coordinate found for '\(placemark.name)'")
+        return .failure("No coordinate found for '\(placemark.name ?? "")'")
     }
 
     return .success(coordinate)
