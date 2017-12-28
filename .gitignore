@@ -1,2 +1,4 @@
+.build
 .DS_Store
+Project.xcodeproj
 set-simulator-location

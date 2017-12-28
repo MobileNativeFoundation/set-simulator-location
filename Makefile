@@ -22,6 +22,12 @@ archive: $(EXECUTABLE)
 	@shasum -a 256 $(EXECUTABLE)
 	@shasum -a 256 $(ARCHIVE)
 
+.PHONY: xcode
+xcode:
+	swift package generate-xcodeproj \
+		--xcconfig-overrides xcodeproj.xcconfig \
+		--output Project.xcodeproj
+
 .PHONY: clean
 clean:
 	rm -rf $(EXECUTABLE) $(ARCHIVE)
