@@ -1,12 +1,38 @@
 import Foundation
 
-enum SimulatorFetchError: String, Error {
-    case simctlFailed = "Running `simctl list` failed"
-    case failedToReadOutput = "Failed to read output from simctl"
-    case noBootedSimulators = "No simulators are currently booted"
+struct Simulator {
+    fileprivate enum State: String {
+        case shutdown = "Shutdown"
+        case booted = "Booted"
+    }
+
+    fileprivate var state: State
+    let name: String
+    let udid: String
+
+    fileprivate init?(dictionary: [String: String]) {
+        guard let state = dictionary["state"].flatMap(State.init), let udid = dictionary["udid"],
+            let name = dictionary["name"] else
+        {
+            return nil
+        }
+
+        self.name = name
+        self.state = state
+        self.udid = udid
+    }
 }
 
-func getBootedSimulators() throws -> [String] {
+func getSimulators(named name: String, from simulators: [Simulator]) throws -> [Simulator] {
+    let matchingSimulators = simulators.filter { $0.name.lowercased() == name.lowercased() }
+    if matchingSimulators.isEmpty {
+        throw SimulatorFetchError.noMatchingSimulators(name: name)
+    }
+
+    return matchingSimulators
+}
+
+func getBootedSimulators() throws -> [Simulator] {
     let task = Process()
     task.launchPath = "/usr/bin/xcrun"
     task.arguments = ["simctl", "list", "-j", "devices"]
@@ -29,14 +55,13 @@ func getBootedSimulators() throws -> [String] {
     }
 
     let devices = json["devices"] as? [String: [[String: String]]] ?? [:]
-    let bootedIDs = devices
-        .flatMap { $1 }
-        .filter { $0["state"] == "Booted" }
-        .flatMap { $0["udid"] }
+    let bootedSimulators = devices.flatMap { $1 }
+        .flatMap(Simulator.init)
+        .filter { $0.state == .booted }
 
-    if bootedIDs.isEmpty {
+    if bootedSimulators.isEmpty {
         throw SimulatorFetchError.noBootedSimulators
     }
 
-    return bootedIDs
+    return bootedSimulators
 }

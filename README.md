@@ -17,6 +17,17 @@ Or using place search:
 $ set-simulator-location -q Lyft HQ San Francisco
 ```
 
+By default the location is set on all booted simulators. If you'd like
+to change it for only one of the booted simulators you can pass `-s`
+followed by the simulator's display name:
+
+```sh
+$ set-simulator-location -q Lyft HQ San Francisco -s iPhone X
+```
+
+NOTE: If you have multiple booted simulators with the same name, the
+location will be set on all of them.
+
 ## Installation
 
 With [`homebrew`](http://brew.sh/):
