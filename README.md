@@ -50,3 +50,9 @@ $ make install
 
 I have submitted [a Radar](http://www.openradar.me/30789939) to have
 this behavior added to `simctl`.
+
+### Development
+
+To work on `set-simulator-location` you can make your changes and run
+`make` to build from the command line. If you'd prefer to work in Xcode
+you can run `make xcode` to generate a project using SwiftPM.
