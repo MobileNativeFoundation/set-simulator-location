@@ -14,16 +14,16 @@ func findLocation(from arguments: [String]) -> Result<CLLocationCoordinate2D> {
     let search = MKLocalSearch(request: request)
     let (response, error) = search.perform()
 
-    if let error = error {
-        return .failure(error.localizedDescription)
-    }
-
     guard let placemark = response?.mapItems.first?.placemark else {
         return .failure("No locations found for '\(query)'")
     }
 
     guard let coordinate = placemark.location?.coordinate else {
         return .failure("No coordinate found for '\(placemark.name ?? "")'")
+    }
+
+    if let error = error {
+        return .failure(error.localizedDescription)
     }
 
     return .success(coordinate)
