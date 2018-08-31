@@ -56,7 +56,7 @@ func getBootedSimulators() throws -> [Simulator] {
 
     let devices = json["devices"] as? [String: [[String: String]]] ?? [:]
     let bootedSimulators = devices.flatMap { $1 }
-        .flatMap(Simulator.init)
+        .compactMap(Simulator.init)
         .filter { $0.state == .booted }
 
     if bootedSimulators.isEmpty {
