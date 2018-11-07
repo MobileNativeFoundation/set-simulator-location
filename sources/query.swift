@@ -8,7 +8,7 @@ func findLocation(from arguments: [String]) -> Result<CLLocationCoordinate2D> {
     }
 
     let query = arguments.joined(separator: " ")
-    let request = MKLocalSearchRequest()
+    let request = MKLocalSearch.Request()
     request.naturalLanguageQuery = query
 
     let search = MKLocalSearch(request: request)
@@ -30,8 +30,8 @@ func findLocation(from arguments: [String]) -> Result<CLLocationCoordinate2D> {
 }
 
 private extension MKLocalSearch {
-    func perform() -> (MKLocalSearchResponse?, Error?) {
-        var result: (MKLocalSearchResponse?, Error?)?
+    func perform() -> (Response?, Error?) {
+        var result: (Response?, Error?)?
 
         self.start { response, error in
             result = (response, error)

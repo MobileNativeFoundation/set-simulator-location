@@ -10,9 +10,9 @@ struct Simulator {
     let name: String
     let udid: String
 
-    fileprivate init?(dictionary: [String: String]) {
-        guard let state = dictionary["state"].flatMap(State.init), let udid = dictionary["udid"],
-            let name = dictionary["name"] else
+    fileprivate init?(dictionary: [String: Any]) {
+        guard let state = State(rawValue: dictionary["state"] as? String ?? ""),
+            let udid = dictionary["udid"] as? String, let name = dictionary["name"] as? String else
         {
             return nil
         }
@@ -54,7 +54,7 @@ func getBootedSimulators() throws -> [Simulator] {
         throw SimulatorFetchError.failedToReadOutput
     }
 
-    let devices = json["devices"] as? [String: [[String: String]]] ?? [:]
+    let devices = json["devices"] as? [String: [[String: Any]]] ?? [:]
     let bootedSimulators = devices.flatMap { $1 }
         .compactMap(Simulator.init)
         .filter { $0.state == .booted }
