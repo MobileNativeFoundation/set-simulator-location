@@ -1,7 +1,7 @@
 import Foundation
 
-func consumeArgument(flag: String, from arguments: inout ArraySlice<String>) -> String? {
-    guard let argumentIndex = arguments.index(of: flag) else {
+func consumeArgument(name: String, from arguments: inout ArraySlice<String>) -> String? {
+    guard let argumentIndex = arguments.index(of: name) else {
         return nil
     }
 
