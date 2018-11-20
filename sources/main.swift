@@ -1,8 +1,8 @@
 import Foundation
 
 var arguments = CommandLine.arguments.dropFirst()
-let deviceUUID = try consumeArgument(flag: "-u", from: &arguments).map(createUUID)
-let deviceName = consumeArgument(flag: "-s", from: &arguments)
+let deviceUUID = try consumeArgument(name: "-u", from: &arguments).map(createUUID)
+let deviceName = consumeArgument(name: "-s", from: &arguments)
 
 guard let flag = arguments.popFirst() else {
     exitWithUsage()
