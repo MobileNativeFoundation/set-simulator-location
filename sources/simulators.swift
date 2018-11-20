@@ -12,7 +12,7 @@ struct Simulators: Codable {
 struct Simulator: Codable {
     private let state: String
     fileprivate let name: String
-    let udid: String
+    let udid: UUID
 
     var isBooted: Bool {
         return self.state == "Booted"
@@ -23,6 +23,15 @@ func getSimulators(named name: String, from simulators: [Simulator]) throws -> [
     let matchingSimulators = simulators.filter { $0.name.lowercased() == name.lowercased() }
     if matchingSimulators.isEmpty {
         throw SimulatorFetchError.noMatchingSimulators(name: name)
+    }
+
+    return matchingSimulators
+}
+
+func getSimulators(with uuid: UUID, from simulators: [Simulator]) throws -> [Simulator] {
+    let matchingSimulators = simulators.filter { $0.udid == uuid }
+    if matchingSimulators.isEmpty {
+        throw SimulatorFetchError.noMatchingUDID(udid: uuid)
     }
 
     return matchingSimulators
