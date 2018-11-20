@@ -1,25 +1,21 @@
 import Foundation
 
-struct Simulator {
-    fileprivate enum State: String {
-        case shutdown = "Shutdown"
-        case booted = "Booted"
-    }
 
-    fileprivate var state: State
-    let name: String
+struct Simulators: Codable {
+    private let devices: [String: [Simulator]]
+
+    var bootedSimulators: [Simulator] {
+        return self.devices.flatMap { $1 }.filter { $0.isBooted }
+    }
+}
+
+struct Simulator: Codable {
+    private let state: String
+    fileprivate let name: String
     let udid: String
 
-    fileprivate init?(dictionary: [String: Any]) {
-        guard let state = State(rawValue: dictionary["state"] as? String ?? ""),
-            let udid = dictionary["udid"] as? String, let name = dictionary["name"] as? String else
-        {
-            return nil
-        }
-
-        self.name = name
-        self.state = state
-        self.udid = udid
+    var isBooted: Bool {
+        return self.state == "Booted"
     }
 }
 
@@ -50,18 +46,9 @@ func getBootedSimulators() throws -> [Simulator] {
         throw SimulatorFetchError.simctlFailed
     }
 
-    guard let json = (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String: Any] else {
+    do {
+        return try JSONDecoder().decode(Simulators.self, from: data).bootedSimulators
+    } catch {
         throw SimulatorFetchError.failedToReadOutput
     }
-
-    let devices = json["devices"] as? [String: [[String: Any]]] ?? [:]
-    let bootedSimulators = devices.flatMap { $1 }
-        .compactMap(Simulator.init)
-        .filter { $0.state == .booted }
-
-    if bootedSimulators.isEmpty {
-        throw SimulatorFetchError.noBootedSimulators
-    }
-
-    return bootedSimulators
 }
