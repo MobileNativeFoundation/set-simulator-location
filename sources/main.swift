@@ -1,19 +1,8 @@
-import CoreLocation
 import Foundation
 
 var arguments = CommandLine.arguments.dropFirst()
-
-var deviceName: String?
-if let argumentIndex = arguments.index(of: "-s") {
-    let device = arguments.suffix(from: argumentIndex).dropFirst().joined(separator: " ")
-    if device.isEmpty {
-        exitWithUsage()
-    } else {
-        deviceName = device
-    }
-
-    arguments = arguments.prefix(upTo: argumentIndex)
-}
+let deviceUUID = try consumeArgument(flag: "-u", from: &arguments).map(createUUID)
+let deviceName = consumeArgument(flag: "-s", from: &arguments)
 
 guard let flag = arguments.popFirst() else {
     exitWithUsage()
@@ -32,9 +21,11 @@ switch command(Array(arguments)) {
     case .success(let coordinate) where coordinate.isValid:
         do {
             let bootedSimulators = try getBootedSimulators()
-            let simulators = try deviceName.map { try getSimulators(named: $0, from: bootedSimulators) }
+            let simulators =
+                try deviceUUID.map { try getSimulators(with: $0, from: bootedSimulators) }
+                ?? deviceName.map { try getSimulators(named: $0, from: bootedSimulators) }
                 ?? bootedSimulators
-            postNotification(for: coordinate, to: simulators.map { $0.udid })
+            postNotification(for: coordinate, to: simulators.map { $0.udid.uuidString })
             print("Setting location to \(coordinate.latitude) \(coordinate.longitude)")
         } catch let error as SimulatorFetchError {
             exitWithUsage(error: error.description)
