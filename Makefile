@@ -5,7 +5,7 @@ SRCS = $(wildcard sources/*.swift)
 
 $(EXECUTABLE): $(SRCS)
 	swiftc \
-		-static-stdlib \
+		-warnings-as-errors \
 		-O -whole-module-optimization \
 		-o $(EXECUTABLE) \
 		-sdk $(shell xcrun --sdk macosx --show-sdk-path) \
