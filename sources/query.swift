@@ -2,7 +2,7 @@ import CoreLocation
 import Foundation
 import MapKit
 
-func findLocation(from arguments: [String]) -> Result<CLLocationCoordinate2D> {
+func findLocation(from arguments: [String]) -> Result<CLLocation> {
     if arguments.isEmpty {
         return .failure("No arguments passed for location search")
     }
@@ -18,7 +18,7 @@ func findLocation(from arguments: [String]) -> Result<CLLocationCoordinate2D> {
         return .failure("No locations found for '\(query)'")
     }
 
-    guard let coordinate = placemark.location?.coordinate else {
+    guard let coordinate = placemark.location else {
         return .failure("No coordinate found for '\(placemark.name ?? "")'")
     }
 

@@ -3,10 +3,11 @@ import Foundation
 
 private let kNotificationName = "com.apple.iphonesimulator.simulateLocation"
 
-func postNotification(for coordinate: CLLocationCoordinate2D, to simulators: [String]) {
+func postNotification(for location: CLLocation, to simulators: [String]) {
     let userInfo: [AnyHashable: Any] = [
-        "simulateLocationLatitude": coordinate.latitude,
-        "simulateLocationLongitude": coordinate.longitude,
+        "simulateLocationLatitude": location.coordinate.latitude,
+        "simulateLocationLongitude": location.coordinate.longitude,
+        "simulateLocationAltitude": location.altitude,
         "simulateLocationDevices": simulators,
     ]
 
