@@ -36,6 +36,12 @@ With [`homebrew`](http://brew.sh/):
 $ brew install lyft/formulae/set-simulator-location
 ```
 
+With [`Mint`](https://github.com/yonaskolb/Mint):
+
+```sh
+$ mint install lyft/set-simulator-location
+```
+
 With a precompiled release:
 
 1. Download the latest release from
