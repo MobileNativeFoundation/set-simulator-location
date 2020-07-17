@@ -10,6 +10,7 @@ guard let flag = arguments.popFirst() else {
 
 let commands = [
     "-c": coordinate,
+    "-d": delete,
     "-q": findLocation,
 ]
 
@@ -18,7 +19,7 @@ guard let command = commands[flag] else {
 }
 
 switch command(Array(arguments)) {
-    case .success(let coordinate) where coordinate.isValid:
+    case .success(let coordinate) where coordinate?.isValid != false:
         do {
             let bootedSimulators = try getBootedSimulators()
             let simulators =
@@ -26,12 +27,16 @@ switch command(Array(arguments)) {
                 ?? deviceName.map { try getSimulators(named: $0, from: bootedSimulators) }
                 ?? bootedSimulators
             postNotification(for: coordinate, to: simulators.map { $0.udid.uuidString })
-            print("Setting location to \(coordinate.latitude) \(coordinate.longitude)")
+            if let coordinate = coordinate {
+                print("Setting location to \(coordinate.latitude) \(coordinate.longitude)")
+            } else {
+                print("Clearing location")
+            }
         } catch let error as SimulatorFetchError {
             exitWithUsage(error: error.description)
         }
     case .success(let coordinate):
-        exitWithUsage(error: "Coordinate: \(coordinate) is invalid")
+        exitWithUsage(error: "Coordinate: \(String(describing: coordinate)) is invalid")
     case .failure(let error):
         exitWithUsage(error: error)
 }
