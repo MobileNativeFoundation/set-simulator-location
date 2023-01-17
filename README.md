@@ -1,5 +1,9 @@
 # set-simulator-location
 
+NOTE: As of Xcode 14 you can use `xcrun simctl location` to do most of
+this instead, including setting specific routes. Use that if possible
+(it does not currently support searching for locations).
+
 This is a simple CLI for easily setting the location of the currently
 running iOS Simulator.
 
