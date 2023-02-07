@@ -1,6 +1,6 @@
 import CoreLocation
 
-func coordinate(from arguments: [String]) -> Result<CLLocationCoordinate2D> {
+func coordinate(from arguments: [String]) -> Result<CLLocationCoordinate2D?> {
     if arguments.count != 2 {
         return .failure("Incorrect number of arguments, expected 2 got \(arguments.count)")
     }
